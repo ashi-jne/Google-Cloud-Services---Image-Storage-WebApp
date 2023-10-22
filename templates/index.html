@@ -1,0 +1,178 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group 17 | Project 2</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+
+    <style>
+        /* background pallette shades from: https://palettes.shecodes.io/palettes/1221 */ <!--GREEN BG-->
+        /* color orange  shades from: https://louisem.com/421339/orange-hex-codes */
+
+        #header {
+            background-color: #c2faf1;
+            color: #fc6600;
+            padding-top: 3%;            
+            padding-bottom: 3%;
+        }
+
+        #file-select {
+            background-color: #f6f6f6;
+            padding-top: 3%;
+            padding-bottom: 2%;
+        }
+
+        .green_background {
+            background-color: green;
+        }
+
+        .orange_shade_bg {
+            background-color: #FD6A02;
+            border-color: #FD6A02;
+        }
+
+        .white {
+            color: white;
+        }
+
+
+        #file-list-display {
+            background-color: #dfeff0;
+            padding-top: 3%;
+            padding-bottom: 5%;
+        }
+
+        #file-list-display a:link {
+            /* color: #964000; */
+            color: #FD6A02;
+            text-decoration: none;
+        }
+
+        #file-list-display a:hover {
+            text-decoration: underline;
+        }
+
+        #file-list-display a:visited {
+            color: #b1560f;
+        }
+
+        .grid-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+
+        #footer {
+            background-color: #295e6a;
+            color: white;
+            padding-bottom: 2%;
+        }
+
+        #footer a:link {
+            color: white;
+        }
+
+        #footer a:hover {
+            color: #fc6600;
+        }
+    </style>
+</head>
+<body>
+    <!-- header -->
+    <div id="header">
+        <div class="container-lg">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="text-center display-5">Group 17 | Project 2</div>
+                  </div>
+                  <div class="col-lg-6">
+                    <div class="text-center text-muted display-5">Image Gallery</div>
+                  </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- file select & upload -->
+    <div id="file-select">
+        <div class="container-lg">
+            <form enctype="multipart/form-data" action="/upload" method="post">
+                  <div style="padding: bottom 2%">
+                    <label for="formFile" class="lead my-2 form-label">Select file for upload</label>
+                    <input name="file_select_form" type="file" class="form-control" id="formFile" accept="image/jpeg" required="true">
+                  </div>
+                  <div class="mt-5">
+                    <button type="submit" class="btn btn-primary orange_shade_bg white">Submit</button>
+                  </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- file list -->
+    <div id="file-list-display">
+        <div class="container-lg">
+            <div class="col-sm-4">
+                {% for (filename, link, filesize, location, createDate) in file_link_tuple: %}
+                <a class="thumbnail" href="#">
+                    <img class="img-thumbnail" src="{{link}}" data-meta-location='{{location}}' data-meta-name='{{filename}}' data-meta-size='{{ filesize }}' data-meta-createDate="{{createDate}}">
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- footer -->
+    <div id="footer">
+        <div class="container-lg">
+            <div class="row">
+                <p class="lead my-4 text-center">Group 17 team members are:</p>
+                <p class="my-2 text-center"><a href="mailto:gaminu2022@fau.edu">Gambo Amminu</a> | <a href="mailto:ajawne2023@fau.edu">Aishwarya Jawne</a> | <a href="mailto:jmanuel2021@fau.edu">Lee Manuel</a> | <a href="mailto:cmurph35@fau.edu">Chris Murphy</a> | <a href="mailto:pnagaraj2023@fau.edu">Prajwal Nagaraj</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal image/metadata display -->
+    <div class="modal fade" id="imgModal" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="'modal-title" id="modalFileName">Modal title</h5>
+                    <button id="imgModalClose" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img class="img-fluid" src="" id="show-img">
+                    <p class="text-sm-start">Size: <span id="modalFileSize"></span></p>
+                    <p class="text-sm-start">Location: <span id="modalFileLocation"></span></p>
+                    <p class="text-sm-start">Create Date: <span id="modalCreateDate"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            $("img").click(function() {
+                var img = $(this).attr('src');
+                
+                var name = $(this).attr('data-meta-name')
+                var size = $(this).attr('data-meta-size')
+                var location = $(this).attr('data-meta-location')
+                var createDate = $(this).attr('data-meta-createDate')
+
+                $("#modalFileName").text(name)
+                $("#modalFileSize").text(size)
+                $("#modalFileLocation").text(location)
+                $("#modalCreateDate").text(createDate)
+
+                $("#show-img").attr('src', img)
+                $("#imgModal").modal('show')
+            });
+        })
+    </script>    
+</body>
+</html>
