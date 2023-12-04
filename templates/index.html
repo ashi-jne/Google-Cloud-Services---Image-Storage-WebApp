@@ -1,83 +1,81 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Metadata and links to CSS and JS libraries -->
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Group 17 | Project 2</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Version 1 -->
+    <title>Group 17 | Course Project V1</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <!-- version 9?-->
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-auth.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
-
+ 
     <style>
-        /* background pallette shades from: https://palettes.shecodes.io/palettes/1221 */ <!-- test trigger --> 
-        /* color orange  shades from: https://louisem.com/421339/orange-hex-codes */
-
+        /* background pallette shades from: https://palettes.shecodes.io/palettes/*/
+        /* COlor orange  shades from: https://louisem.com/421339/orange-hex-codes */
         #header {
-            background-color: #c2faf1;
-            color: #fc6600;
+            background-color: #9caffa;
+            color: #ca5101;
             padding-top: 3%;            
             padding-bottom: 3%;
         }
-
         #file-select {
-            background-color: #f6f6f6;
+            background-color: #e8fee8;
             padding-top: 3%;
             padding-bottom: 2%;
         }
-
         .green_background {
-            background-color: green;
+            background-color: blue;
         }
-
         .orange_shade_bg {
             background-color: #FD6A02;
             border-color: #FD6A02;
         }
-
         .white {
             color: white;
         }
-
-
         #file-list-display {
-            background-color: #dfeff0;
+            background-color: #b5c1f6;
             padding-top: 3%;
             padding-bottom: 5%;
         }
-
         #file-list-display a:link {
             /* color: #964000; */
             color: #FD6A02;
             text-decoration: none;
         }
-
         #file-list-display a:hover {
             text-decoration: underline;
         }
-
         #file-list-display a:visited {
             color: #b1560f;
         }
-
         .grid-list {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
         }
-
-
         #footer {
-            background-color: #295e6a;
+            background-color: #2e31d0;
             color: white;
             padding-bottom: 2%;
         }
-
         #footer a:link {
             color: white;
         }
-
         #footer a:hover {
             color: #fc6600;
         }
+        .hidden {
+            display: none;
+        }
+        .blur-background {
+            filter: blur(5px);
+        }
+ 
     </style>
 </head>
 <body>
@@ -86,7 +84,7 @@
         <div class="container-lg">
             <div class="row justify-content-center">
                 <div class="col-lg-6">
-                    <div class="text-center display-5">Group 17 | Project 2</div>
+                    <div class="text-center display-5">Group 17 | Course Project V1</div>
                   </div>
                   <div class="col-lg-6">
                     <div class="text-center text-muted display-5">Image Gallery</div>
@@ -94,7 +92,8 @@
             </div>
         </div>
     </div>
-
+<!-- Main content that should be hidden before login: -->
+<div class="main-content hidden">
     <!-- file select & upload -->
     <div id="file-select">
         <div class="container-lg">
@@ -109,32 +108,33 @@
             </form>
         </div>
     </div>
-
-    <!-- file list -->
-    <div id="file-list-display">
-        <div class="container-lg">
-            <div class="col-sm-4">
-                {% for (filename, link, filesize, location, createDate) in file_link_tuple: %}
-                <a class="thumbnail" href="#">
-                    <img class="img-thumbnail" src="{{link}}" data-meta-location='{{location}}' data-meta-name='{{filename}}' data-meta-size='{{ filesize }}' data-meta-createDate="{{createDate}}">
-                </a>
-                {% endfor %}
+        <!-- file list the only working one -->
+        <div id="file-list-display">
+            <div class="container-lg">
+                <div class="col-sm-4">
+                    {% for image in file_link_tuple %}
+                    <a class="thumbnail" href="#">
+                        <img class="img-thumbnail" src="{{image.url}}" data-meta-location='{{image.location}}' data-meta-name='{{image.name}}' data-meta-size='{{ image.size }}' data-meta-createDate="{{image.createDate}}">
+                    </a>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
-
+</div>
+    <!-- Logout Button -->
+<button id="logoutButton" class="btn btn-warning" type="button">Logout</button>
     <!-- footer -->
-    <div id="footer">
+<div id="footer">
         <div class="container-lg">
             <div class="row">
                 <p class="lead my-4 text-center">Group 17 team members are:</p>
                 <p class="my-2 text-center"><a href="mailto:gaminu2022@fau.edu">Gambo Amminu</a> | <a href="mailto:ajawne2023@fau.edu">Aishwarya Jawne</a> | <a href="mailto:jmanuel2021@fau.edu">Lee Manuel</a> | <a href="mailto:cmurph35@fau.edu">Chris Murphy</a> | <a href="mailto:pnagaraj2023@fau.edu">Prajwal Nagaraj</a></p>
             </div>
         </div>
-    </div>
-
+</div>
+ 
     <!-- modal image/metadata display -->
-    <div class="modal fade" id="imgModal" role="dialog">
+<div class="modal fade" id="imgModal" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -148,31 +148,345 @@
                     <p class="text-sm-start">Create Date: <span id="modalCreateDate"></span></p>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="deleteImageBtn">Delete Image</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
+</div>
+<!-- Login Modal -->
+<div class="modal" id="loginModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Login</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- The form for logging in -->
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email address</label>
+                        <input type="email" class="form-control" id="loginEmail" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" class="form-control" id="loginPassword" name="password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <p>Don't have an account? <a href="#" class="signup-link" data-toggle="modal" data-target="#signupModal">Sign up</a></p>
+            </div>
+        </div>
     </div>
-
-    <script>
-        $(document).ready(function(){
-            $("img").click(function() {
-                var img = $(this).attr('src');
-                
-                var name = $(this).attr('data-meta-name')
-                var size = $(this).attr('data-meta-size')
-                var location = $(this).attr('data-meta-location')
-                var createDate = $(this).attr('data-meta-createDate')
-
-                $("#modalFileName").text(name)
-                $("#modalFileSize").text(size)
-                $("#modalFileLocation").text(location)
-                $("#modalCreateDate").text(createDate)
-
-                $("#show-img").attr('src', img)
-                $("#imgModal").modal('show')
-            });
+</div>
+ 
+<!-- sign-up module-->
+<div class="modal" id="signupModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Sign Up</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- The form for signing up -->
+          <form id="signupForm">
+            <div class="form-group">
+              <label for="email">Email address</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </form>
+          <div class="modal-footer">
+            <p>Already have an account?<a href="#" class="login-link" data-toggle="modal" data-target="#loginModal">Login</a></p>
+        </div>
+        <!-- Alerts for FAIL/SUCCESS of signup modal -->
+        <div id="signup-success" class="alert alert-success" role="alert" style="display: none;"></div>
+        <div id="signup-error" class="alert alert-danger" role="alert" style="display: none;"></div>
+      </div>
+    </div>
+  </div>
+ 
+ 
+<script>
+ 
+// Firebase configuration
+var firebaseConfig = {
+    apiKey: "AIzaSyAScQHLGvIihMxQi4F2U000RJYUrqWU3Js",
+    authDomain: "group17-project1-399506.firebaseapp.com",
+    projectId: "group17-project1-399506",
+    storageBucket: "group17-project1-399506.appspot.com",
+    messagingSenderId: "198359759839",
+    appId: "1:198359759839:web:c6c4a6704a42dfdcbca26a",
+    measurementId: "G-1NME94HXMP"
+};
+ 
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+ 
+function deleteImage() {
+        // Retrieve the image details from the modal
+        const imageSrc = document.getElementById('show-img').getAttribute('src');
+        const imageName = document.getElementById('modalFileName').innerText;
+        console.log('Attempting to delete image with source:', imageSrc);
+        console.log('Image name to delete:', imageName);
+        // Make an API call to your server to delete the image
+        const requestBody=JSON.stringify({imagePath:imageSrc, imageName:imageName})
+        console.log('Request body: ',requestBody)
+        fetch('/delete_image', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: requestBody
         })
-    </script>    
+        .then(response => response.json())
+        .then(result => {
+            console.log('Response from server', result); // Image deleted
+            $("#imgModal").modal('hide'); // Close the modal
+            // Optionally, refresh the image list or remove the image element from the DOM
+ 
+        })
+        .catch(error => {
+            console.error("Error deleting image:", error);
+        });
+    }
+ 
+ 
+// Document ready function
+$(document).ready(function() {
+    document.getElementById('logoutButton').addEventListener('click', function() {
+    // Handle the logout process here
+    firebase.auth().signOut().then(() => {
+        // Sign-out successful.
+        // You can redirect the user or change the UI accordingly
+    }).catch((error) => {
+        // An error happened during the sign-out
+        console.error('Logout Error:', error);
+    });
+});
+    // Event listener for the login form
+    $('.signup-link').click(function(e) {
+        e.preventDefault();
+        $('#loginModal').modal('hide');
+        setTimeout(function() { $('#signupModal').modal('show'); }, 500);
+    });
+ 
+    // Event handler for "Back to Login" link/button in the sign-up modal
+    $('.login-link').click(function(e) {
+        e.preventDefault();
+        $('#signupModal').modal('hide');
+        setTimeout(function() { $('#loginModal').modal('show'); }, 500);
+    });
+ 
+    // Listen for authentication state changes
+    firebase.auth().onAuthStateChanged(async function(user) {
+        console.log("Auth state changed. Is user signed in? ", !!user);
+        if (user) {
+            try{
+            const token= await user.getIdToken();
+            const response = await fetch('/verify_token',{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ token: token })
+                });
+                const data= await response.json();
+                    if (data.success) {
+                        // Flask server knows the user is logged in.
+                        console.log("User is signed in:", user);
+                        $('.main-content').removeClass('hidden').removeClass('blur-background');
+                        $('#loginModal').modal('hide');
+                        $('#logoutButton').css('display', 'block');
+                        console.log("Logout button should now be visible");
+                        await fetchUserImages(); //call a function to fetch and display images
+                    }            
+            } catch (error) {
+                console.error("Error during login process: ", error);
+            }  
+        } else {
+            // No user is signed in, hide main content and show login modal.
+            console.log("No user is signed in.");
+            $('.main-content').addClass('hidden');
+            $('#loginModal').modal({
+                backdrop: 'static',
+                keyboard: false
+            }).modal('show');
+            $('#logoutButton').css('display', 'none');
+            console.log("logout button should now be hidden");
+        }
+    });
+   
+    function fetchUserImages() {
+    // Make a GET request to the endpoint that returns the images for the logged-in user
+    fetch('/get_user_images')
+    .then(response => response.json())
+    .then(images => {
+        // Clear existing images
+        const imageGallery = document.getElementById('file-list-display');
+        imageGallery.innerHTML = '';
+ 
+        // Assuming 'images' is an array of image objects with url, name, size, createDate
+        images.forEach(image => {
+            // Create an anchor and image element for each image
+            const anchor = document.createElement('a');
+            anchor.className = 'thumbnail';
+            anchor.href = '#';
+           
+            const imgElement = document.createElement('img');
+            imgElement.className = 'img-thumbnail';
+            imgElement.src = image.url;
+            imgElement.dataset.metaLocation = image.location;
+            imgElement.dataset.metaName = image.name;
+            imgElement.dataset.metaSize = image.size;
+            imgElement.dataset.metaCreateDate = image.createDate;
+           
+            // Append the image to the anchor, and the anchor to the gallery
+            anchor.appendChild(imgElement);
+            imageGallery.appendChild(anchor);
+ 
+            // Add click event listener to the image here
+            imgElement.addEventListener('click', function() {
+                // Set the src for the image and other metadata in the modal
+                $("#modalFileName").text(image.name);
+                $("#modalFileSize").text(image.size);
+                $("#modalFileLocation").text(image.location);
+                $("#modalCreateDate").text(image.createDate);
+ 
+                $("#show-img").attr('src', image.url);
+                $("#imgModal").modal('show');
+            });
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching images:', error);
+    });
+}
+ 
+ 
+$('#loginForm').on('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission
+ 
+    var email = $('#loginEmail').val();
+    var password = $('#loginPassword').val();
+ 
+    // Firebase authentication
+    firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            // Login successful
+        console.log('Logged in:', userCredential.user);
+        // For example, you can hide the login modal and show the main content:
+        $('#loginModal').modal('hide');
+ 
+        $('.main-content').removeClass('hidden');
+        })
+        .catch((error) => {
+        // Login failed. Handle errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        console.error('Login Error:', errorCode, errorMessage);
+        // Display the error message to the user, for example:
+        $('#login-error-message').text(errorMessage).show();
+        });
+});
+ 
+//signup form. user signs up and auto logs in
+$('#signupForm').on('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission
+ 
+    var email = $('#email').val();
+    var password = $('#password').val();
+ 
+    // Firebase authentication to create a new user and log them in
+    firebase.auth().createUserWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            // Sign-up and login successful
+            console.log('Signed up and logged in:', userCredential.user);
+            // Hide the sign-up modal and show the main content
+            $('#signupModal').modal('hide');
+            $('.main-content').removeClass('hidden');
+            // You might want to display a success message or redirect the user
+        })
+        .catch((error) => {
+            // Sign-up failed. Handle errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.error('Sign-up Error:', errorCode, errorMessage);
+            // Display the error message to the user
+            $('#signup-error').text(errorMessage).show();
+        });
+});
+ 
+    // Clear messages when the modal is closed
+    $('#signupModal').on('hidden.bs.modal', function () {
+        $('#signup-success').hide().text('');
+        $('#signup-error').hide().text('');
+        // You may also want to clear the form fields here if not done on submission
+        $('#signupForm').find('input').val('');
+    });
+    // Handle showing and hiding modals with blur effect
+    $('#loginModal, #signupModal').on('show.bs.modal', function () {
+        $('.main-content').addClass('blur-background');
+    }).on('hidden.bs.modal', function () {
+        if (!firebase.auth().currentUser) {
+            $('.main-content').addClass('blur-background');
+        }
+    });
+   
+    //delete image event listener for delete button
+    $("#deleteImageBtn").click(function() {
+        deleteImage();
+        location.reload();
+   
+    });
+ 
+    // Image click event listener
+    $("img").click(function() {
+        var img = $(this).attr('src');
+        var name = $(this).data('meta-name');
+        console.log('Image source clicked: ',img);
+        console.log('Image name clicked: ', name);
+        var size = $(this).data('meta-size');
+        var location = $(this).data('meta-location');
+        var createDate = $(this).data('meta-createDate');
+ 
+        $("#modalFileName").text(name);
+        $("#modalFileSize").text(size);
+        $("#modalFileLocation").text(location);
+        $("#modalCreateDate").text(createDate);
+ 
+        $("#show-img").attr('src', img);
+        $("#imgModal").modal('show');
+    });
+    console.log("Document is ready.");
+// Check the login status passed from the Flask backend
+var isLoggedIn = {{ isLoggedIn | tojson }};
+    if (isLoggedIn) {
+        // User is logged in, show main content and logout button, hide login/signup modals
+        $('.main-content').removeClass('hidden');
+        $('#loginModal, #signupModal').modal('hide');
+        $('#logoutButton').show();
+    } else {
+        // No user is signed in, show login modal, hide main content and logout button
+        $('.main-content').addClass('hidden');
+        $('#logoutButton').hide();
+        $('#loginModal').modal('show');
+    }
+});
+ 
+    </script>
+   
 </body>
 </html>
