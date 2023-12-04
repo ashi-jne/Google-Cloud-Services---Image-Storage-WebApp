@@ -1,36 +1,66 @@
 
-"""
-Project 3 requirements:
+import pyrebase
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+from google.cloud import secretmanager
+# Use a service account
 
-    - Implement change management to your application and create automation for deployment as well as automated testing
+# Initialize without explicit credentials since GCP manages it
 
-    - Upon completion 50% of your users should see a blue background, while the other 50% should see a green background on your front layer
+firebaseConfig = {
+    "apiKey": "",
+    "authDomain": "",
+    "projectId": "",
+    "storageBucket": "",
+    "messagingSenderId": "",
+    "appId": "",
+    "measurementId": ""
+} #insert your own
+client = secretmanager.SecretManagerServiceClient()
 
-    - Traffic should be split evenly and you should be able to run the 2 versions of the application in parallel
+# Specify the name of your secret in Secrets Manager
+secret_name = "firebase"
 
-    - Do not implement the split logic in your application.
+# Access the secret
+response = client.access_secret_version(request={"name": secret_name})
+secret_payload = response.payload.data.decode("UTF-8")
 
-    - EXTRA POINTS for considering different development and staging environments as well as automated rollback should your tests fail
+# Initialize Firebase Admin SDK with the service account key from the secret
+firebase_cred = credentials.Certificate(secret_payload)
+firebase_admin.initialize_app(firebase_cred)
 
-    - (from Project 2): EXTRA POINTS for considering multiple users and protecting their images from other users’ access
+# Now you can use Firestore or other Firebase services
+db = firestore.client()
 
-"""
 
-"""
-Develpment environment setup (for Windows): https://cloud.google.com/python/docs/setup#windows
 
-"""
+@app.route('/signup', methods=['POST'])
+def signup():
+    email = request.form['email']
+    password = request.form['password']
+    try:
+        user = auth.create_user_with_email_and_password(email, password)
+        # Log in the user
+        # Redirect to index with a session indicating the user is logged in
+        return redirect(url_for('index'))
+    except:
+        # Handle signup errors
+        return "An error occurred during signup."
+
 
 import os
 import uuid
 import time
 
 from flask import Flask, redirect, request, redirect, render_template
+from flask_login import current_user
 from werkzeug.utils import secure_filename
-
 from google.cloud import datastore
 from google.cloud.datastore.query import PropertyFilter
 from google.cloud import storage 
+
+
 
 ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'JPG', 'JPEG'}
 
@@ -38,11 +68,11 @@ app = Flask(__name__)
 app.config["DEBUG"] = True
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
 
-g_project_name = 'group17-project2'
-g_project_id = 'group17-project1-399506'
-g_bucket_name = 'project2-repo'
-
-g_datastore_query_by_kind = 'ImageMetadata'
+#replace with your own variable values
+g_project_name = ''
+g_project_id = ''
+g_bucket_name = ''
+g_datastore_query_by_kind = ''
 
 ## ------------------------------------------------------------      
 
@@ -121,7 +151,8 @@ def allowed_file(filename):
 @app.route('/index')
 def index():
     file_link_tuple = get_file_link_tuple()
-    return render_template('index.html', file_link_tuple = file_link_tuple)
+    # Check if user is authenticated and pass that status to the template
+    return render_template('index.html', file_link_tuple=file_link_tuple, isLoggedIn=isLoggedIn)
 
 
 @app.route('/upload', methods = ['POST'])   
