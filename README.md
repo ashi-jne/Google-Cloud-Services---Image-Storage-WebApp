@@ -1,4 +1,4 @@
-# Google Cloud Services - Image Sotrage Web App
+# Google Cloud Services - Image Storage Web App
 
 Cloud Computing
 
